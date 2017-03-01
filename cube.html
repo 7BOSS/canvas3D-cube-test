@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        canvas {
+            margin-top: 100px;
+            margin-left: 100px;
+            border: 3px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cv1"></canvas>
+    <script>
+        var cv1 = document.getElementById("cv1");
+        var cW = cv1.width = 500,
+            cH = cv1.height = 300;
+        var vertex = function (x, y, z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+
+            this.move = function (r, moveX, moveY) {
+                var angX = moveX * Math.PI / 360 / 4;
+                var angY = -moveY * Math.PI / 180 / 4;
+
+                //          sin(ang) = 对边/斜边        cos(ang) = 邻边/斜边            tan(ang) = 对边/邻边
+
+                var cx = Math.cos(angX);
+                var sx = Math.sin(angX);
+                var cy = Math.cos(angY);
+                var sy = Math.sin(angY);
+
+                var x = this.x - center.x;
+                var y = this.y - center.y;
+                var z = this.z - center.z;
+
+                this.x = cx * x - sx * cy * y + sx * sy * z + center.x;
+                this.y = sx * x + cx * cy * y - cx * sy * z + center.y;
+                this.z = sy * y + cy * z + center.z;
+            }
+        };
+        var xian = function (v1, v2) {
+            this.v1 = v1;
+            this.v2 = v2;
+        };
+
+        function draw(cId) {
+            var ctx = cId.getContext('2d');
+            ctx.clearRect(0, 0, cId.width, cId.height);
+            biao(cv1, 10);
+            //        ctx.save();
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(0,0,0,1)';
+            for (var i = 0; i < c1.face.length; i++) {
+                for (var j = 0; j < c1.face[i].length; j++) {
+                    //                console.log(i, j);
+                    ctx.moveTo(trans2D(c1.face[i][j].v1)[0], trans2D(c1.face[i][j].v1)[1]);
+                    ctx.lineTo(trans2D(c1.face[i][j].v2)[0], trans2D(c1.face[i][j].v2)[1]);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function trans2D(vertex3D) {
+            var cx = vertex3D.x + cv1.width / 2;
+            var cy = vertex3D.y + cv1.height / 2;
+            return [cx, cy];
+        }
+
+        function biao(cId, step) {
+            var ctxb = cId.getContext('2d');
+            ctxb.beginPath();
+            ctxb.strokeStyle = 'rgba(0,0,0,0.1)';
+            ctxb.lineWidth = 1;
+            for (var i = 0; i < cId.height / step; i++) {
+                for (var j = 0; j < cId.width / step; j++) {
+                    ctxb.strokeRect(j * step, i * step, step, step);
+                }
+            }
+        }
+
+
+        //    半径 50：
+        var r = 50;
+        var center = new vertex(0, 0, 0);
+
+        var vertexF = function (x, y, z) {
+            return new vertex(center.x + x, center.y + y, center.z + z)
+        }
+        var cubeF = function (v1, v2, that) {
+            return new xian(that.vertices[v1], that.vertices[v2])
+        }
+
+
+        var Cube = function (center, d) {
+            this.vertices = [
+                vertexF(-d, -d, d),
+                vertexF(-d, -d, -d),
+                vertexF(d, -d, -d),
+                vertexF(d, -d, d),
+                vertexF(d, d, d),
+                vertexF(d, d, -d),
+                vertexF(-d, d, -d),
+                vertexF(-d, d, d)
+            ];
+            this.face = [
+                [
+                    cubeF(0, 1, this),
+                    cubeF(1, 2, this),
+                    cubeF(2, 3, this),
+                    cubeF(3, 0, this)
+                ],
+                [
+                    cubeF(3, 2, this),
+                    cubeF(2, 5, this),
+                    cubeF(5, 4, this),
+                    cubeF(4, 3, this)
+                ],
+                [
+                    cubeF(4, 5, this),
+                    cubeF(5, 6, this),
+                    cubeF(6, 7, this),
+                    cubeF(7, 4, this)
+                ],
+                [
+                    cubeF(7, 6, this),
+                    cubeF(6, 1, this),
+                    cubeF(1, 0, this),
+                    cubeF(0, 7, this)
+                ],
+                [
+                    cubeF(7, 0, this),
+                    cubeF(0, 3, this),
+                    cubeF(3, 4, this),
+                    cubeF(4, 7, this)
+                ],
+                [
+                    cubeF(1, 6, this),
+                    cubeF(6, 5, this),
+                    cubeF(5, 2, this),
+                    cubeF(2, 1, this)
+                ]
+            ];
+        };
+        var c1 = new Cube(center, 50);
+        //    第一次绘制
+        draw(cv1);
+
+        //    move事件
+        function fn(e) {
+            var moveX = (e.clientX - this.startX) / 4;
+            var moveY = (e.clientY - this.startY) / 4;
+
+            for (var i = 0; i < c1.face.length; i++) {
+                for (var j = 0; j < c1.face[i].length; j++) {
+                    c1.face[i][j].v1.move(-r, moveX, moveY);
+                    c1.face[i][j].v2.move(r, moveX, moveY);
+                }
+            }
+            draw(cv1);
+        }
+        cv1.addEventListener('mousedown', function (e) {
+            this.startX = e.clientX;
+            this.startY = e.clientY;
+            cv1.addEventListener('mousemove', fn);
+        });
+        cv1.addEventListener('mouseup', function () {
+            cv1.removeEventListener('mousemove', fn);
+        });
+    </script>
+</body>
+
+</html>
