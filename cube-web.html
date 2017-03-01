@@ -32,7 +32,6 @@
                 var angX = moveX * Math.PI / 360 / 4;
                 var angY = -moveY * Math.PI / 180 / 4;
 
-                //          sin(ang) = 对边/斜边        cos(ang) = 邻边/斜边            tan(ang) = 对边/邻边
 
                 var cx = Math.cos(angX);
                 var sx = Math.sin(angX);
@@ -57,13 +56,11 @@
             var ctx = cId.getContext('2d');
             ctx.clearRect(0, 0, cId.width, cId.height);
             biao(cv1, 10);
-            //        ctx.save();
             ctx.beginPath();
             ctx.lineWidth = 3;
             ctx.strokeStyle = 'rgba(0,0,0,1)';
             for (var i = 0; i < c1.face.length; i++) {
                 for (var j = 0; j < c1.face[i].length; j++) {
-                    //                console.log(i, j);
                     ctx.moveTo(trans2D(c1.face[i][j].v1)[0], trans2D(c1.face[i][j].v1)[1]);
                     ctx.lineTo(trans2D(c1.face[i][j].v2)[0], trans2D(c1.face[i][j].v2)[1]);
                 }
@@ -90,7 +87,6 @@
         }
 
 
-        //    半径 50：
         var r = 50;
         var center = new vertex(0, 0, 0);
 
@@ -153,12 +149,9 @@
             ];
         };
         var c1 = new Cube(center, 50);
-        //    第一次绘制
         draw(cv1);
 
-        //    move事件
         function fn(e) {
-            console.log(e);
             var moveX = (e.changedTouches[0].clientX - this.startX) / 4;
             var moveY = (e.changedTouches[0].clientY - this.startY) / 4;
 
