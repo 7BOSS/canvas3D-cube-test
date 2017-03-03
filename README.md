@@ -3,11 +3,11 @@
 
 Use canvas to draw a rotatable 3D cube (only 3kb)
 
-PC端url:
+PC-url:
 
  https://tinymark.github.io/canvas3D-cube-test/cube-pc
 
-移动端url:
+ mobile url:
 
  https://tinymark.github.io/canvas3D-cube-test/cube-web-c
 
